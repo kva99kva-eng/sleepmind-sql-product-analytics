@@ -100,7 +100,7 @@ The project includes the following SQL analysis files:
 
 \### 1. Onboarding funnel
 
-
+![Onboarding Funnel](images/onboarding_funnel.png)
 
 The largest early drop-off happens between registration and first app open.
 
@@ -126,7 +126,7 @@ The largest early drop-off happens between registration and first app open.
 
 \### 2. Cohort retention
 
-
+![D30 Retention by Acquisition Channel](images/d30_retention_by_channel.png)
 
 Average retention:
 
@@ -227,7 +227,7 @@ Users with higher early sleep logging frequency showed slightly stronger sleep-s
 \### 4. A/B test analysis
 
 
-
+![A/B Test Summary](images/ab_test_summary.png)
 The experiment compared:
 
 
