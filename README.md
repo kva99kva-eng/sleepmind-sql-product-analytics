@@ -2,7 +2,7 @@
 
 SQL portfolio project for a synthetic sleep-tracking healthtech app.
 
-The project simulates the work of a product/research analyst: designing a PostgreSQL analytics database, generating event-level data, validating data quality, analyzing onboarding, retention, sleep improvement, A/B test results and churn risk.
+This project simulates the work of a product/research analyst: designing a PostgreSQL analytics database, generating event-level data, validating data quality, analyzing onboarding, retention, sleep improvement, A/B test results and churn risk.
 
 ## Business question
 
@@ -12,11 +12,11 @@ Which user behaviors are associated with better retention, stronger engagement a
 
 SleepMind is a simulated sleep-tracking app where users can:
 
-- log sleep sessions
-- view sleep recommendations
-- interact with personalized or generic recommendations
-- start a trial subscription
-- convert to a paid plan
+- log sleep sessions;
+- view sleep recommendations;
+- interact with personalized or generic recommendations;
+- start a trial subscription;
+- convert to a paid plan.
 
 The project uses synthetic data generated with Python and loaded into PostgreSQL.
 
@@ -34,8 +34,6 @@ The database contains six core tables:
 | `experiment_assignments` | A/B test group assignment |
 
 ## Analysis modules
-
-The project includes the following SQL analysis files:
 
 | File | Analysis |
 |---|---|
@@ -62,8 +60,6 @@ The largest early drop-off happens between registration and first app open.
 | First recommendation viewed | 1,095 | 91.25% |
 | Second sleep log | 1,095 | 91.25% |
 | D7 retained | 855 | 71.25% |
-
-Users who open the app for the first time usually continue to complete core onboarding actions such as logging sleep and viewing recommendations.
 
 ### 2. Cohort retention
 
@@ -93,14 +89,12 @@ Weakest D30 retention:
 |---|---:|
 | content | 68.14% |
 
-This suggests that acquisition channel is more important for retention differences than device type.
-
 ### 3. Sleep improvement
 
 Sleep improvement was measured as the difference between:
 
-- baseline period: days 0-6 after signup
-- follow-up period: days 14-30 after signup
+- baseline period: days 0–6 after signup;
+- follow-up period: days 14–30 after signup.
 
 | Metric | Value |
 |---|---:|
@@ -119,22 +113,14 @@ Sleep change segments:
 
 Users with higher early sleep logging frequency showed slightly stronger sleep-score improvement.
 
-| Early logging segment | Average sleep score delta |
-|---|---:|
-| High logging | +1.69 |
-| Medium logging | +1.49 |
-| Low logging | +1.23 |
-
-This suggests that consistent early sleep logging is associated with better sleep-score improvement.
-
 ### 4. A/B test analysis
 
 ![A/B Test Summary](images/ab_test_summary.png)
 
 The experiment compared:
 
-- control: generic sleep recommendations
-- treatment: personalized sleep recommendations
+- control: generic sleep recommendations;
+- treatment: personalized sleep recommendations.
 
 | Metric | Control | Treatment | Lift |
 |---|---:|---:|---:|
@@ -159,12 +145,12 @@ The experiment does not provide convincing evidence of a meaningful D30 retentio
 
 A churn-risk score was built using:
 
-- inactivity during days 24-30
-- low number of sleep logs
-- worsening sleep score
-- no recommendation clicks
-- trial expiration or cancellation
-- no D30 retention
+- inactivity during days 24–30;
+- low number of sleep logs;
+- worsening sleep score;
+- no recommendation clicks;
+- trial expiration or cancellation;
+- no D30 retention.
 
 | Risk segment | Users | Share | Average risk score | D30 retention |
 |---|---:|---:|---:|---:|
@@ -174,29 +160,12 @@ A churn-risk score was built using:
 
 The churn-risk score clearly separates users by retention outcome.
 
-Recommended product actions:
-
-| Segment | Recommended action |
-|---|---|
-| High risk | Send reactivation campaign with personalized sleep insight and sleep-log reminder |
-| Medium risk | Send low-friction habit prompt and highlight one personalized recommendation |
-| Low risk | Keep standard engagement flow and avoid excessive notifications |
-
-## Key conclusions
-
-1. The largest onboarding drop-off happens before the first app open.
-2. Acquisition channel is more important for retention differences than device type.
-3. Users with frequent early sleep logging show stronger sleep-score improvement.
-4. Personalized recommendations increase recommendation CTR substantially.
-5. The A/B test does not show a meaningful D30 retention lift.
-6. Churn-risk segmentation successfully identifies users with low retention probability.
-
 ## Business recommendations
 
 1. Improve activation from registration to first app open.
 2. Investigate why the `content` acquisition channel has weaker D30 retention.
 3. Encourage early sleep logging during the first week.
-4. Keep personalized recommendations because they increase engagement.
+4. Keep personalized recommendations because they increase recommendation engagement.
 5. Do not claim retention improvement from personalization without further testing.
 6. Use churn-risk segments for targeted lifecycle campaigns.
 
@@ -209,18 +178,12 @@ Recommended product actions:
 - NumPy
 - SQLAlchemy
 - Docker
-- matplotlib
 
 ## Project structure
 
 ```text
 sleepmind-sql-product-analytics/
-│
 ├── data/                         # Generated CSV files, ignored by Git
-├── images/
-│   ├── ab_test_summary.png
-│   ├── d30_retention_by_channel.png
-│   └── onboarding_funnel.png
 ├── reports/
 │   └── sleepmind_sql_analytics_report.md
 ├── sql/
@@ -230,7 +193,6 @@ sleepmind-sql-product-analytics/
 │   ├── 05_sleep_improvement.sql
 │   ├── 06_ab_test_analysis.sql
 │   └── 07_churn_risk.sql
-│
 ├── docker-compose.yml
 ├── load_to_postgres.py
 ├── make_charts.py
@@ -243,55 +205,56 @@ sleepmind-sql-product-analytics/
 
 ## How to reproduce
 
-### 1. Clone the repository
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/kva99kva-eng/sleepmind-sql-product-analytics.git
 cd sleepmind-sql-product-analytics
 ```
 
-### 2. Create and activate virtual environment
+2. Create and activate virtual environment:
 
 ```bash
 python -m venv .venv
-```
-
-Windows PowerShell:
-
-```bash
 .\.venv\Scripts\Activate.ps1
 ```
 
-### 3. Install dependencies
+3. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Generate synthetic data
+4. Generate synthetic data:
 
 ```bash
 python seed_data.py
 ```
 
-### 5. Start PostgreSQL with Docker
+5. Start PostgreSQL with Docker:
 
 ```bash
 docker compose up -d
 ```
 
-### 6. Load data into PostgreSQL
+6. Load data into PostgreSQL:
 
 ```bash
 python load_to_postgres.py
 ```
 
-### 7. Run SQL analysis files
+7. Run SQL analysis files.
 
-Example for Windows PowerShell:
+Example:
+
+```powershell
+Get-Content .\sql\03_onboarding_funnel.sql | docker exec -i sleepmind_postgres psql -U sleepmind_user -d sleepmind
+```
+
+8. Generate charts:
 
 ```bash
-Get-Content .\sql\03_onboarding_funnel.sql | docker exec -i sleepmind_postgres psql -U sleepmind_user -d sleepmind
+python make_charts.py
 ```
 
 ## Notes

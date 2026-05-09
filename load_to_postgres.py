@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
@@ -7,7 +9,7 @@ from sqlalchemy import create_engine, text
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+psycopg2://sleepmind_user:sleepmind_password@localhost:5432/sleepmind"
+    "postgresql+psycopg2://sleepmind_user:sleepmind_password@localhost:5432/sleepmind",
 )
 
 DATA_DIR = Path("data")
@@ -41,7 +43,8 @@ TABLES = {
 }
 
 
-def load_schema(engine):
+def load_schema(engine) -> None:
+    """Create database schema."""
     schema_sql = SCHEMA_FILE.read_text(encoding="utf-8")
 
     with engine.begin() as connection:
@@ -50,14 +53,19 @@ def load_schema(engine):
     print("Database schema created successfully.")
 
 
-def load_table(engine, table_name, file_name, parse_dates):
+def load_table(
+    engine,
+    table_name: str,
+    file_name: str,
+    parse_dates: list[str],
+) -> None:
+    """Load one CSV file into PostgreSQL."""
     file_path = DATA_DIR / file_name
 
     if not file_path.exists():
         raise FileNotFoundError(f"File not found: {file_path}")
 
     df = pd.read_csv(file_path, parse_dates=parse_dates)
-
     df = df.where(pd.notnull(df), None)
 
     df.to_sql(
@@ -72,19 +80,19 @@ def load_table(engine, table_name, file_name, parse_dates):
     print(f"Loaded {len(df):,} rows into {table_name}")
 
 
-def print_table_counts(engine):
+def print_table_counts(engine) -> None:
+    """Print row counts for all loaded tables."""
     print("\nTable row counts:")
 
     with engine.connect() as connection:
         for table_name in TABLES.keys():
-            result = connection.execute(
-                text(f"SELECT COUNT(*) FROM {table_name}")
-            )
+            result = connection.execute(text(f"SELECT COUNT(*) FROM {table_name}"))
             count = result.scalar()
             print(f"{table_name}: {count:,}")
 
 
-def main():
+def main() -> None:
+    """Create schema and load all CSV files into PostgreSQL."""
     engine = create_engine(DATABASE_URL)
 
     load_schema(engine)
