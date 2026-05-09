@@ -4,6 +4,22 @@ SQL portfolio project for a synthetic sleep-tracking healthtech app.
 
 This project simulates the work of a product/research analyst: designing a PostgreSQL analytics database, generating event-level data, validating data quality, analyzing onboarding, retention, sleep improvement, A/B test results and churn risk.
 
+## Executive Summary
+
+This project is a SQL product analytics case study for a simulated sleep-tracking app.
+
+I designed a PostgreSQL analytics database, generated synthetic event-level product data, and analyzed the full user journey: onboarding, retention, sleep improvement, A/B testing and churn risk.
+
+The strongest part of the project is not only the SQL queries, but the business interpretation: the analysis separates engagement improvements from retention impact and avoids overstating the A/B test result.
+
+Key analytical decisions:
+
+- used cohort-based retention instead of simple activity counts;
+- compared recommendation CTR with downstream D30 retention;
+- measured sleep improvement using baseline and follow-up periods;
+- built churn-risk segmentation from behavioral and subscription signals;
+- clearly separated statistically weak retention lift from strong engagement lift.
+
 ## Business question
 
 Which user behaviors are associated with better retention, stronger engagement and sleep improvement?
