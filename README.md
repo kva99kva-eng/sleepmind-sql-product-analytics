@@ -111,8 +111,8 @@ Weakest D30 retention:
 
 Sleep improvement was measured as the difference between:
 
-- baseline period: days 0–6 after signup;
-- follow-up period: days 14–30 after signup.
+- baseline period: days 0-6 after signup;
+- follow-up period: days 14-30 after signup.
 
 | Metric | Value |
 |---|---:|
@@ -163,7 +163,7 @@ The experiment does not provide convincing evidence of a meaningful D30 retentio
 
 A churn-risk score was built using:
 
-- inactivity during days 24–30;
+- inactivity during days 24-30;
 - low number of sleep logs;
 - worsening sleep score;
 - no recommendation clicks;
