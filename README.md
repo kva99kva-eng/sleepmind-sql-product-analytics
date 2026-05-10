@@ -1,5 +1,7 @@
 # SleepMind SQL Product Analytics
 
+[![Tests](https://github.com/kva99kva-eng/sleepmind-sql-product-analytics/actions/workflows/tests.yml/badge.svg)](https://github.com/kva99kva-eng/sleepmind-sql-product-analytics/actions/workflows/tests.yml)
+
 SQL portfolio project for a synthetic sleep-tracking healthtech app.
 
 This project simulates the work of a product/research analyst: designing a PostgreSQL analytics database, generating event-level data, validating data quality, analyzing onboarding, retention, sleep improvement, A/B test results and churn risk.
