@@ -178,14 +178,51 @@ A churn-risk score was built using:
 
 The churn-risk score clearly separates users by retention outcome.
 
-## Business recommendations
+## Business Impact and Analyst Recommendations
 
-1. Improve activation from registration to first app open.
-2. Investigate why the `content` acquisition channel has weaker D30 retention.
-3. Encourage early sleep logging during the first week.
-4. Keep personalized recommendations because they increase recommendation engagement.
-5. Do not claim retention improvement from personalization without further testing.
-6. Use churn-risk segments for targeted lifecycle campaigns.
+Based on the analysis, the strongest product opportunities are:
+
+1. Improve activation after registration  
+   The largest early funnel loss happens between registration and first app open. This suggests that onboarding, first-session experience and activation reminders should be improved before optimizing later funnel steps.
+
+2. Investigate acquisition channel quality  
+   Retention differs more by acquisition channel than by device. Paid ads and organic users show stronger D30 retention, while the content channel performs weaker. Marketing source quality should be monitored separately from total acquisition volume.
+
+3. Treat personalization as an engagement win, not a retention win yet  
+   Personalized recommendations substantially increased recommendation CTR, but the D30 retention lift was very small. The correct product conclusion is that personalization improves engagement, but more evidence is needed before claiming retention impact.
+
+4. Use churn-risk segments for targeted lifecycle campaigns  
+   The churn-risk score separates users into clear retention groups. High-risk users should receive earlier lifecycle interventions, while medium-risk users are likely the best target for recovery experiments.
+
+5. Avoid overstating the A/B test  
+   The A/B test shows a large CTR improvement but weak retention evidence. A full rollout should not be justified by engagement metrics alone unless the product goal is explicitly engagement rather than retention or paid conversion.
+
+Recommended next steps:
+
+- redesign the first-session onboarding flow;
+- monitor D7 and D30 retention by acquisition channel;
+- run a larger follow-up experiment focused on retention and paid conversion;
+- test targeted nudges for medium-risk users;
+- add confidence intervals or Bayesian uncertainty estimates for experiment metrics.
+
+## Quality and Reproducibility
+
+This repository is structured as a reproducible SQL analytics case rather than a collection of isolated queries.
+
+| Component | Purpose |
+|---|---|
+| `schema.sql` | Defines the PostgreSQL analytics schema |
+| `seed_data.py` | Generates synthetic product analytics data |
+| `load_to_postgres.py` | Loads generated data into PostgreSQL |
+| `sql/` | Contains modular SQL analyses for product questions |
+| `make_charts.py` | Generates visual outputs for the README |
+| `tests/` | Checks project structure, SQL modules and Python script compilation |
+| GitHub Actions | Runs automated tests on push and pull request |
+| `docker-compose.yml` | Provides a reproducible PostgreSQL environment |
+
+Current local test status:
+
+`7 passed`
 
 ## Tools used
 
@@ -201,25 +238,39 @@ The churn-risk score clearly separates users by retention outcome.
 
 ```text
 sleepmind-sql-product-analytics/
-├── data/                         # Generated CSV files, ignored by Git
-├── reports/
-│   └── sleepmind_sql_analytics_report.md
-├── sql/
-│   ├── 02_data_quality_checks.sql
-│   ├── 03_onboarding_funnel.sql
-│   ├── 04_cohort_retention.sql
-│   ├── 05_sleep_improvement.sql
-│   ├── 06_ab_test_analysis.sql
-│   └── 07_churn_risk.sql
-├── docker-compose.yml
-├── load_to_postgres.py
-├── make_charts.py
-├── schema.sql
-├── seed_data.py
-├── requirements.txt
-├── .gitignore
-└── README.md
+|-- .github/
+|   `-- workflows/
+|       `-- tests.yml
+|-- data/                         # Generated CSV files, ignored by Git
+|-- images/
+|   |-- ab_test_summary.png
+|   |-- d30_retention_by_channel.png
+|   `-- onboarding_funnel.png
+|-- notebooks/
+|   `-- .gitkeep
+|-- reports/
+|   `-- sleepmind_sql_analytics_report.md
+|-- sql/
+|   |-- 02_data_quality_checks.sql
+|   |-- 03_onboarding_funnel.sql
+|   |-- 04_cohort_retention.sql
+|   |-- 05_sleep_improvement.sql
+|   |-- 06_ab_test_analysis.sql
+|   `-- 07_churn_risk.sql
+|-- tests/
+|   |-- test_project_structure.py
+|   |-- test_python_scripts.py
+|   `-- test_sql_files.py
+|-- docker-compose.yml
+|-- load_to_postgres.py
+|-- make_charts.py
+|-- schema.sql
+|-- seed_data.py
+|-- requirements.txt
+|-- .gitignore
+`-- README.md
 ```
+
 
 ## How to reproduce
 
