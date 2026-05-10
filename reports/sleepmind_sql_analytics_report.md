@@ -1,426 +1,274 @@
-\# SleepMind SQL Product Analytics Report
+﻿# SleepMind SQL Product Analytics Report
 
+## Executive Summary
 
+SleepMind SQL Product Analytics is a portfolio case study for a synthetic sleep-tracking healthtech app.
 
-\## Project overview
+The project simulates a realistic product analytics workflow: designing a PostgreSQL analytics database, generating event-level data, validating data quality, analyzing onboarding, retention, sleep improvement, A/B test results and churn risk.
 
+The main analytical value of the project is not only the SQL implementation, but the interpretation of product behavior:
 
+- activation loss happens early, between registration and first app open;
+- acquisition channel quality matters more than device differences;
+- personalized recommendations strongly increase engagement, but do not yet prove D30 retention impact;
+- churn-risk segmentation can be used for targeted lifecycle campaigns;
+- A/B test results should not be overstated when engagement improves but retention does not.
 
-SleepMind SQL Product Analytics is a portfolio project simulating the analytics workflow for a sleep-tracking healthtech app.
+## Business Question
 
+Which user behaviors are associated with better retention, stronger engagement and sleep improvement?
 
+The analysis focuses on five product areas:
 
-The project uses a synthetic PostgreSQL database with user-level, event-level, sleep, recommendation, subscription and A/B experiment data.
+1. onboarding funnel;
+2. cohort retention;
+3. sleep-score improvement;
+4. A/B test performance;
+5. churn-risk segmentation.
 
+## Data Model
 
+The synthetic PostgreSQL database contains six core tables:
 
-The main business question:
+| Table | Description |
+|---|---|
+| `users` | User signup date, country, device and acquisition channel |
+| `app_events` | Product events such as app opens, sleep logs, recommendation views and diary opens |
+| `sleep_sessions` | Sleep duration, sleep efficiency, awakenings and sleep score |
+| `recommendations` | Recommendation type, mode and click behavior |
+| `subscriptions` | Trial, paid and cancellation status |
+| `experiment_assignments` | A/B test group assignment |
 
+## Analysis Workflow
 
+The project follows a typical product analytics workflow:
 
-> Which user behaviors are associated with better retention, stronger engagement and sleep improvement?
+1. Validate database quality.
+2. Build onboarding funnel.
+3. Calculate cohort retention.
+4. Measure sleep-score improvement.
+5. Analyze A/B test results.
+6. Build churn-risk segments.
+7. Translate findings into product recommendations.
 
-
-
-\## Data model
-
-
-
-The database contains six core tables:
-
-
-
-\- `users` — user signup date, country, device and acquisition channel
-
-\- `app\_events` — product behavior events such as app opens, sleep logs and recommendation views
-
-\- `sleep\_sessions` — sleep duration, sleep efficiency, awakenings and sleep score
-
-\- `recommendations` — recommendation type, mode and click behavior
-
-\- `subscriptions` — trial and paid subscription status
-
-\- `experiment\_assignments` — A/B test group assignment
-
-
-
-\## 1. Data quality checks
-
-
+## 1. Data Quality Checks
 
 Before analysis, the dataset was checked for:
 
+- duplicate primary keys;
+- missing values in key fields;
+- foreign key integrity issues;
+- invalid date sequences;
+- out-of-range sleep metrics;
+- duplicate behavioral events.
 
+No critical data quality issues were found. All six tables were successfully loaded into PostgreSQL and could be used for downstream analysis.
 
-\- duplicate primary keys
-
-\- missing values in key fields
-
-\- foreign key integrity issues
-
-\- invalid date sequences
-
-\- out-of-range sleep metrics
-
-\- duplicate behavioral events
-
-
-
-No critical data quality issues were found. All six tables were successfully loaded into PostgreSQL.
-
-
-
-\## 2. Onboarding funnel
-
-
+## 2. Onboarding Funnel
 
 The onboarding funnel included the following steps:
 
-
-
-1\. Registration
-
-2\. First app open
-
-3\. First sleep log
-
-4\. First recommendation viewed
-
-5\. Second sleep log
-
-6\. D7 retained
-
-
-
-Main results:
-
-
+1. registration;
+2. first app open;
+3. first sleep log;
+4. first recommendation viewed;
+5. second sleep log;
+6. D7 retained.
 
 | Funnel step | Users | Conversion from registration |
-
 |---|---:|---:|
-
 | Registration | 1,200 | 100.00% |
-
 | First app open | 1,095 | 91.25% |
-
 | First sleep log | 1,095 | 91.25% |
-
 | First recommendation viewed | 1,095 | 91.25% |
-
 | Second sleep log | 1,095 | 91.25% |
-
 | D7 retained | 855 | 71.25% |
 
-
+### Interpretation
 
 The largest early drop-off happens between registration and first app open.
 
-
-
 Users who open the app for the first time usually continue to complete core onboarding actions such as logging sleep and viewing recommendations.
 
+### Product implication
 
+The first-session experience is likely more important than later onboarding steps. Product work should focus on activation reminders, first-open motivation and reducing friction immediately after registration.
 
-\## 3. Cohort retention
+## 3. Cohort Retention
 
-
-
-Retention was calculated by signup week and lifecycle day.
-
-
-
-Average retention:
-
-
+Retention was calculated by signup cohort and lifecycle day.
 
 | Metric | Retention |
-
 |---|---:|
-
 | D1 retention | 76.92% |
-
 | D7 retention | 78.33% |
-
 | D14 retention | 76.58% |
-
 | D30 retention | 76.58% |
 
+Retention by device was almost identical, while acquisition channel showed stronger differences.
 
-
-Retention by acquisition channel showed that `paid\_ads` and `organic` users had the strongest D30 retention.
-
-
+Best D30 retention:
 
 | Acquisition channel | D30 retention |
-
 |---|---:|
-
-| paid\_ads | 79.87% |
-
+| paid_ads | 79.87% |
 | organic | 78.65% |
 
-| app\_store | 74.89% |
+Weakest D30 retention:
 
-| referral | 74.89% |
-
+| Acquisition channel | D30 retention |
+|---|---:|
 | content | 68.14% |
 
+### Interpretation
 
+Retention differences are more visible by acquisition channel than by device.
 
-Retention by device was almost identical:
+### Product implication
 
+Marketing quality should be evaluated not only by acquisition volume, but also by downstream retention. The `content` channel requires further investigation because it brings users with weaker D30 retention.
 
-
-| Device | D30 retention |
-
-|---|---:|
-
-| Android | 76.66% |
-
-| iOS | 76.47% |
-
-
-
-This suggests that acquisition channel is more important for retention differences than device type.
-
-
-
-\## 4. Sleep improvement analysis
-
-
+## 4. Sleep Improvement
 
 Sleep improvement was measured as the difference between:
 
-
-
-\- baseline period: days 0–6 after signup
-
-\- follow-up period: days 14–30 after signup
-
-
-
-Users were included only if they had at least two sleep logs in both periods.
-
-
-
-Main results:
-
-
+- baseline period: days 0-6 after signup;
+- follow-up period: days 14-30 after signup.
 
 | Metric | Value |
-
 |---|---:|
-
 | Users analyzed | 990 |
-
 | Baseline average sleep score | 67.82 |
-
 | Follow-up average sleep score | 69.31 |
-
 | Average sleep score delta | +1.49 |
-
-
 
 Sleep change segments:
 
-
-
 | Segment | Users | Share | Average sleep score delta |
-
 |---|---:|---:|---:|
-
 | Improved | 452 | 45.66% | +4.80 |
-
 | Stable | 365 | 36.87% | +0.15 |
-
 | Worsened | 173 | 17.47% | -4.35 |
 
+### Interpretation
 
+Average sleep score improved slightly. Users with higher early sleep logging frequency showed somewhat stronger sleep-score improvement.
 
-Users with higher early sleep logging frequency showed slightly stronger improvement:
+### Product implication
 
+Early logging habit may be an important behavioral signal. The product should encourage sleep logging during the first week, but the result should not be interpreted as a causal medical effect.
 
+## 5. A/B Test Analysis
 
-| Segment | Average sleep score delta |
+The experiment compared two recommendation modes:
 
-|---|---:|
-
-| High logging | +1.69 |
-
-| Medium logging | +1.49 |
-
-| Low logging | +1.23 |
-
-
-
-This suggests that consistent early sleep logging is associated with better sleep-score improvement.
-
-
-
-\## 5. A/B test analysis
-
-
-
-The experiment compared:
-
-
-
-\- control: generic sleep recommendations
-
-\- treatment: personalized sleep recommendations
-
-
-
-Sample size:
-
-
-
-| Group | Users |
-
-|---|---:|
-
-| Control | 599 |
-
-| Treatment | 601 |
-
-
-
-Main experiment metrics:
-
-
+- control: generic sleep recommendations;
+- treatment: personalized sleep recommendations.
 
 | Metric | Control | Treatment | Lift |
-
 |---|---:|---:|---:|
-
 | D7 retention | 77.46% | 79.20% | +1.74 pp |
-
 | D30 retention | 76.46% | 76.71% | +0.24 pp |
-
 | Recommendation CTR | 38.11% | 55.32% | +17.21 pp |
-
 | Paid conversion | 21.87% | 20.80% | -1.07 pp |
-
 | Sleep score delta | +1.32 | +1.65 | +0.33 |
 
-
-
-The treatment group showed much higher recommendation CTR and slightly higher sleep-score improvement.
-
-
-
-However, the D30 retention lift was very small:
-
-
+Additional D30 retention check:
 
 | Metric | Value |
-
 |---|---:|
-
-| Control D30 retention | 76.46% |
-
-| Treatment D30 retention | 76.71% |
-
 | D30 lift | +0.24 pp |
-
 | Approximate z-score | 0.100 |
 
+### Interpretation
 
+Personalized recommendations substantially increased recommendation CTR.
 
-The experiment does not provide convincing evidence of a meaningful D30 retention improvement.
+However, the D30 retention lift was very small. The experiment does not provide convincing evidence of meaningful D30 retention improvement.
 
+### Product implication
 
+Personalization can be treated as an engagement win, but not yet as a retention win. A mature analyst should not recommend a full rollout based only on CTR unless the product goal is explicitly engagement.
 
-\## 6. Churn risk analysis
+## 6. Churn-Risk Segmentation
 
+A churn-risk score was built using behavioral and subscription signals:
 
-
-A churn-risk score was built using:
-
-
-
-\- inactivity during days 24–30
-
-\- low number of sleep logs
-
-\- worsening sleep score
-
-\- no recommendation clicks
-
-\- trial expiration or cancellation
-
-\- no D30 retention
-
-
-
-Risk segment distribution:
-
-
+- inactivity during days 24-30;
+- low number of sleep logs;
+- worsening sleep score;
+- no recommendation clicks;
+- trial expiration or cancellation;
+- no D30 retention.
 
 | Risk segment | Users | Share | Average risk score | D30 retention |
-
 |---|---:|---:|---:|---:|
-
 | High risk | 88 | 7.33% | 7.53 | 0.00% |
-
 | Medium risk | 356 | 29.67% | 4.75 | 52.81% |
-
 | Low risk | 756 | 63.00% | 1.95 | 96.69% |
 
-
+### Interpretation
 
 The churn-risk score clearly separates users by retention outcome.
 
+### Product implication
 
+High-risk users should receive earlier lifecycle interventions. Medium-risk users are likely the best target for recovery experiments because they still have meaningful retention potential.
 
-Recommended product actions:
+## Business Recommendations
 
+Based on the analysis, the strongest product opportunities are:
 
+1. Improve activation after registration.
+2. Monitor D7 and D30 retention by acquisition channel.
+3. Investigate why the `content` channel has weaker D30 retention.
+4. Encourage early sleep logging during the first week.
+5. Keep personalized recommendations as an engagement feature.
+6. Do not claim retention improvement from personalization without additional evidence.
+7. Use churn-risk segments for targeted lifecycle campaigns.
+8. Run a larger follow-up experiment focused on retention and paid conversion.
 
-| Segment | Recommended action |
+## Limitations
 
-|---|---|
+This project uses synthetic data and is intended for portfolio demonstration.
 
-| High risk | Send reactivation campaign with personalized sleep insight and sleep-log reminder |
+Main limitations:
 
-| Medium risk | Send low-friction habit prompt and highlight one personalized recommendation |
+- synthetic data does not fully represent real user behavior;
+- A/B test interpretation is simplified;
+- confidence intervals and formal uncertainty estimates can be expanded;
+- sleep-score improvement should not be interpreted as a medical effect;
+- churn-risk segmentation is rule-based and not a validated predictive model;
+- the project demonstrates analytics workflow rather than production decision automation.
 
-| Low risk | Keep standard engagement flow and avoid excessive notifications |
+## Next Steps
 
+Recommended next analytical improvements:
 
+- add confidence intervals for key product metrics;
+- add Bayesian or bootstrap uncertainty estimates for A/B testing;
+- compare churn-risk rules with a supervised churn model;
+- add dashboard-ready aggregate tables;
+- build a short executive dashboard;
+- test lifecycle interventions for medium-risk users;
+- expand the report with SQL query references for each result.
 
-\## Key conclusions
+## Skills Demonstrated
 
+This case study demonstrates:
 
+- SQL analytics;
+- PostgreSQL data modeling;
+- product funnel analysis;
+- cohort retention analysis;
+- A/B test interpretation;
+- churn-risk segmentation;
+- synthetic data generation;
+- business recommendation writing;
+- careful communication of limitations.
 
-1\. The largest onboarding drop-off happens before the first app open.
+## Conclusion
 
-2\. Acquisition channel is more important for retention differences than device type.
+The project shows a complete product analytics workflow for a sleep-tracking app.
 
-3\. Users with frequent early sleep logging show stronger sleep-score improvement.
-
-4\. Personalized recommendations increase recommendation CTR substantially.
-
-5\. The A/B test does not show a meaningful D30 retention lift.
-
-6\. Churn-risk segmentation successfully identifies users with low retention probability.
-
-
-
-\## Business recommendations
-
-
-
-1\. Improve activation from registration to first app open.
-
-2\. Investigate why the `content` acquisition channel has weaker D30 retention.
-
-3\. Encourage early sleep logging during the first week.
-
-4\. Keep personalized recommendations because they increase engagement.
-
-5\. Do not claim retention improvement from personalization without further testing.
-
-6\. Use churn-risk segments for targeted lifecycle campaigns.
-
+The strongest conclusion is that personalization improves recommendation engagement, while retention impact remains unproven. The best near-term product opportunities are activation improvement, acquisition quality monitoring and targeted lifecycle campaigns for churn-risk segments.
